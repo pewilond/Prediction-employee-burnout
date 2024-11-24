@@ -1,3 +1,4 @@
+from pathlib import Path
 import shap
 import pandas as pd
 import keras
@@ -164,21 +165,23 @@ def get_recommendation(feature, value):
     else:
         return predefined_recommendations.get(feature, "")
 
-if __name__ == "__main__":
-    # Загрузка и предобработка данных
-    data = pd.read_csv("../dataset.csv").drop("Attrition", axis=1)
-    data = data[data["OverTime"] != "Yes"]
-    print(data['OverTime'].value_counts()['No'])
-    print(len(data))
-    necessary_columns_path = 'C:\\Users\\MSI\\Prediction-employee-burnout\\analysis\\necessary_columns'
-    with open(necessary_columns_path, 'r') as file:
-        necessary_columns_name = [line.strip() for line in file.readlines()]
-    person = data.iloc[:100]
-    necessary_columns_name.remove("Attrition")
-    person = person[necessary_columns_name]
-    # Получение рекомендаций
-    result = get_recommendations(person, top_n=3)
-    # Вывод рекомендаций
-    for rec in result['recommendation']:
-        print("*"*30)
-        print(rec)
+
+# Загрузка и предобработка данных
+data = pd.read_csv("../dataset.csv").drop("Attrition", axis=1)
+data = data[data["OverTime"] != "Yes"]
+print(data['OverTime'].value_counts()['No'])
+print(len(data))
+# necessary_columns_path = 'C:\\Users\\MSI\\Prediction-employee-burnout\\analysis\\necessary_columns'
+BASE_DIR = str(Path(__file__).resolve().parent.parent)
+necessary_columns_path = BASE_DIR + '/analysis/necessary_columns.txt'
+with open(necessary_columns_path, 'r') as file:
+    necessary_columns_name = [line.strip() for line in file.readlines()]
+person = data.iloc[:100]
+necessary_columns_name.remove("Attrition")
+person = person[necessary_columns_name]
+# Получение рекомендаций
+result = get_recommendations(person, top_n=3)
+# Вывод рекомендаций
+for rec in result['recommendation']:
+    print("*"*30)
+    print(rec)
